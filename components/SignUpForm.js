@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from "react";
+import React, { useCallback, useReducer, useState, useEffect } from "react";
 import Input from "../components/Input";
 import SubmitButton from "../components/SubmitButton";
 import { Feather, FontAwesome } from "@expo/vector-icons";
@@ -6,9 +6,8 @@ import { Feather, FontAwesome } from "@expo/vector-icons";
 import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
 import { signUp } from "./../utils/actions/authActions";
-import { getFirebaseApp } from "./../utils/firebaseHelper";
-
-console.log(getFirebaseApp());
+import { ActivityIndicator, Alert } from "react-native";
+import colors from "../constants/colors";
 
 const initialState = {
   inputValues: {
@@ -27,6 +26,8 @@ const initialState = {
 };
 
 const SignUpForm = (props) => {
+  const [error, setError] = useState();
+  const [isLoading, setIsLoanding] = useState(false);
   const [formState, dispatchFormState] = useReducer(reducer, initialState);
 
   const inputChangedHandler = useCallback(
@@ -37,13 +38,26 @@ const SignUpForm = (props) => {
     [dispatchFormState]
   );
 
-  const authHandler = () => {
-    signUp(
-      formState.inputValues.firstName,
-      formState.inputValues.lastName,
-      formState.inputValues.email,
-      formState.inputValues.password
-    );
+  useEffect(() => {
+    if (error) {
+      Alert.alert("An error ocured", error, [{ text: "Tentar novamente" }]);
+    }
+  }, [error]);
+
+  const authHandler = async () => {
+    try {
+      setIsLoanding(true);
+      await signUp(
+        formState.inputValues.firstName,
+        formState.inputValues.lastName,
+        formState.inputValues.email,
+        formState.inputValues.password
+      );
+      setError(null);
+    } catch (error) {
+      setError(error.message);
+      setIsLoanding(false);
+    }
   };
 
   return (
@@ -90,12 +104,20 @@ const SignUpForm = (props) => {
         errorText={formState.inputValidities["password"]}
       />
 
-      <SubmitButton
-        title="Sign up"
-        onPress={authHandler}
-        style={{ marginTop: 20 }}
-        disabled={!formState.formIsValid}
-      />
+      {isLoading ? (
+        <ActivityIndicator
+          size={"small"}
+          color={colors.primary}
+          style={{ marginTop: 10 }}
+        />
+      ) : (
+        <SubmitButton
+          title="Sign up"
+          onPress={authHandler}
+          style={{ marginTop: 20 }}
+          disabled={!formState.formIsValid}
+        />
+      )}
     </>
   );
 };
