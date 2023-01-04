@@ -5,16 +5,23 @@ import { Feather } from "@expo/vector-icons";
 
 import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
-import { Alert } from "react-native";
+import { ActivityIndicator, Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import { signIn } from "../utils/actions/authActions";
+import colors from "../constants/colors";
+
+const isTestMode = true;
 
 const initialState = {
-  inputValidities: {
-    email: false,
-    password: false,
+  inputValues: {
+    email: isTestMode ? "diego@example.com" : "",
+    password: isTestMode ? "123456" : "",
   },
-  formIsValid: false,
+  inputValidities: {
+    email: isTestMode,
+    password: isTestMode,
+  },
+  formIsValid: isTestMode,
 };
 
 const SignInForm = (props) => {
@@ -64,6 +71,7 @@ const SignInForm = (props) => {
         autoCapitalize="none"
         keyboardType="email-address"
         onInputChanged={inputChangedHandler}
+        value={formState.inputValues.email}
         errorText={formState.inputValidities["email"]}
       />
 
@@ -75,15 +83,30 @@ const SignInForm = (props) => {
         autoCapitalize="none"
         secureTextEntry
         onInputChanged={inputChangedHandler}
+        value={formState.inputValues.password}
         errorText={formState.inputValidities["password"]}
       />
 
-      <SubmitButton
+      {/* <SubmitButton
         title="Sign in"
         onPress={authHandler}
         style={{ marginTop: 20 }}
         disabled={!formState.formIsValid}
-      />
+      /> */}
+      {isLoading ? (
+        <ActivityIndicator
+          size={"small"}
+          color={colors.primary}
+          style={{ marginTop: 10 }}
+        />
+      ) : (
+        <SubmitButton
+          title="Sign in"
+          onPress={authHandler}
+          style={{ marginTop: 20 }}
+          disabled={!formState.formIsValid}
+        />
+      )}
     </>
   );
 };
