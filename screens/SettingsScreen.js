@@ -1,13 +1,13 @@
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import React, { useCallback, useReducer, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Input from "../components/Input";
 import PageContainer from "../components/PageContainer";
 import PageTitle from "../components/PageTitle";
 import SubmitButton from "../components/SubmitButton";
 import colors from "../constants/colors";
-import { updateSignedInUserData } from "../utils/actions/authActions";
+import { updateSignedInUserData, userLogout } from "../utils/actions/authActions";
 import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
 
@@ -15,6 +15,8 @@ import { reducer } from "../utils/reducers/formReducer";
   
 
 const SettingsScreen = (props) => {
+
+  const dispatch = useDispatch()
 
   const [isLoading, setIsLoanding] = useState(false);
 
@@ -124,6 +126,12 @@ const SettingsScreen = (props) => {
           disabled={!formState.formIsValid}
         />
       )}
+      <SubmitButton
+          title="Logout"
+          onPress={() => dispatch(userLogout())}
+          style={{ marginTop: 20 }}
+         color={colors.red}
+        />
     </PageContainer>
   );
 };
