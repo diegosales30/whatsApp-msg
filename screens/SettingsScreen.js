@@ -7,6 +7,7 @@ import PageContainer from "../components/PageContainer";
 import PageTitle from "../components/PageTitle";
 import SubmitButton from "../components/SubmitButton";
 import colors from "../constants/colors";
+import { updateSignedInUserData } from "../utils/actions/authActions";
 import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
 
@@ -46,9 +47,18 @@ const SettingsScreen = (props) => {
         [dispatchFormState]
       );
 
-      const saveHandle = () => {
+      const saveHandle = async () => {
         const updateValues = formState.inputValues;
-        console.log(updateValues);
+        try{
+          setIsLoanding(true)
+          await updateSignedInUserData(userData.userId, updateValues)
+          
+        } catch (error) {
+          console.log(error);
+        }
+        finally {
+          setIsLoanding(false)
+        }
       }
   return (
     <PageContainer>
