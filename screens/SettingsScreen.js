@@ -47,7 +47,8 @@ const SettingsScreen = (props) => {
       );
 
       const saveHandle = () => {
-
+        const updateValues = formState.inputValues;
+        console.log(updateValues);
       }
   return (
     <PageContainer>
