@@ -7,6 +7,7 @@ import PageContainer from "../components/PageContainer";
 import PageTitle from "../components/PageTitle";
 import SubmitButton from "../components/SubmitButton";
 import colors from "../constants/colors";
+import { updateLoggedInUserData } from "../store/authSlice";
 import { updateSignedInUserData, userLogout } from "../utils/actions/authActions";
 import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
@@ -19,8 +20,10 @@ const SettingsScreen = (props) => {
   const dispatch = useDispatch()
 
   const [isLoading, setIsLoanding] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const userData = useSelector(state => state.auth.userData)
+  console.log(userData);
 
   const initialState = {
     inputValues: {
@@ -45,15 +48,22 @@ const SettingsScreen = (props) => {
         (inputId, inputValue) => {
           const result = validateInput(inputId, inputValue);
           dispatchFormState({ inputId, validationResult: result, inputValue });
+
+          setShowSuccessMessage(true)
         },
         [dispatchFormState]
       );
 
       const saveHandle = async () => {
-        const updateValues = formState.inputValues;
+        const updatedValues = formState.inputValues;
         try{
           setIsLoanding(true)
-          await updateSignedInUserData(userData.userId, updateValues)
+          await updateSignedInUserData(userData.userId, updatedValues)
+          dispatch(updateLoggedInUserData({newData: updatedValues}))
+
+          setTimeout(() => {
+            setShowSuccessMessage(false)
+          },3000)
           
         } catch (error) {
           console.log(error);
@@ -110,8 +120,14 @@ const SettingsScreen = (props) => {
         autoCapitalize="none"
         errorText={formState.inputValidities["about"]}
         initialValue={userData.about}
+
+        
         
       />
+      <View style={{ marginTop: 20}}>
+      {
+          showSuccessMessage && <Text>Saved!</Text>
+        }
       {isLoading ? (
         <ActivityIndicator
           size={"small"}
@@ -126,6 +142,7 @@ const SettingsScreen = (props) => {
           disabled={!formState.formIsValid}
         />
       )}
+      </View >
       <SubmitButton
           title="Logout"
           onPress={() => dispatch(userLogout())}
