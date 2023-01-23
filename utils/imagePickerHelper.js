@@ -3,7 +3,19 @@ import { Platform } from 'react-native';
 
 export const launchImagePicker = async () => {
     await checkMediaPermissions();
-    
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1
+    });
+
+    if(!result.canceled) {
+        console.log(result.url);
+    }
+
+
 }
 
 const checkMediaPermissions = async () => {
