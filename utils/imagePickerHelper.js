@@ -11,8 +11,8 @@ export const launchImagePicker = async () => {
         quality: 1
     });
 
-    if(!result.canceled) {
-        console.log(result.url);
+    if(!result.cancelled) {
+       return result.uri
     }
 
 
