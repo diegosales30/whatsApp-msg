@@ -4,7 +4,7 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import userImage from "../assets/images/userImage.jpeg";
 import colors from "../constants/colors";
-import { launchImagePicker } from "../utils/imagePickerHelper";
+import { launchImagePicker, uploadImageAsync } from "../utils/imagePickerHelper";
 import { useState } from "react";
 
 const ProfileImage = (props) => {
@@ -19,8 +19,14 @@ const ProfileImage = (props) => {
       if (!tempUri) return;
 
       //update the image
+      const uploadUrl = await uploadImageAsync(tempUri);
 
-      setImage({ uri: tempUri });
+      if(!uploadUrl) {
+        throw new Error("Could not upload image");
+      }
+
+      setImage({ uri: uploadUrl });
+
     } catch (error) {
       console.log(error);
     }
