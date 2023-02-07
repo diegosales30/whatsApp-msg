@@ -6,6 +6,7 @@ import CustomHeaderButton from '../components/CustomHeaderButton';
 import PageContainer from '../components/PageContainer';
 import colors from '../constants/colors';
 import commonStyles from '../constants/commonStyles';
+import { searchUsers } from '../utils/actions/userActions';
 
 
 const NewChatScreen = props => {
@@ -30,8 +31,8 @@ const NewChatScreen = props => {
     }, []);
 
     useEffect(() => {
-        const delaySearch = setTimeout(() => {
-            console.log('oi');
+        const delaySearch = setTimeout(async() => {
+            
             if(!searchTerm || searchTerm === "") {
                 setUsers();
                 setNoResultsFound(false);
@@ -39,8 +40,8 @@ const NewChatScreen = props => {
             }
             setIsLoading(true);
 
-            setUsers({})
-            setNoResultsFound(true)
+            const usersResult = await searchUsers(searchTerm)
+            console.log(usersResult);
 
             setIsLoading(false)
         },500)

@@ -1,10 +1,10 @@
-import { child, getDatabase, ref, get } from "firebase/database";
+import { child, getDatabase, ref, get, query, orderByChild, startAfter, startAt, endAt } from "firebase/database";
 import { getFirebaseApp } from "./../firebaseHelper";
 
 export const getUserData = async (userId) => {
   try {
     const app = getFirebaseApp();
-    const dbRef = ref(getDatabase());
+    const dbRef = ref(getDatabase(app)); //att agora
     const useRef = child(dbRef, `users/${userId}`);
 
     const snapshot = await get(useRef);
@@ -13,3 +13,28 @@ export const getUserData = async (userId) => {
     console.log(error);
   }
 };
+
+export const searchUsers = async (queryText) => {
+    const searchTerm = queryText.toLowerCase();
+
+    try {
+      const app = getFirebaseApp();
+      const dbRef = ref(getDatabase(app));
+      const userRef = child(dbRef, 'users');
+
+      const queryRef = query(userRef, orderByChild('firstLast'), 
+      startAt(searchTerm), 
+      endAt(searchTerm + "\uf8ff"));
+
+      const snapshot = await get(queryRef)
+
+      if(snapshot.exists()){
+        return snapshot.val()
+      }
+
+      return {};
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+}
