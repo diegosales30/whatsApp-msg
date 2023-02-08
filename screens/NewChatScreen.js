@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Button, TextInput, ActivityIndicator, FlatList } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../components/CustomHeaderButton';
 import PageContainer from '../components/PageContainer';
@@ -41,7 +41,14 @@ const NewChatScreen = props => {
             setIsLoading(true);
 
             const usersResult = await searchUsers(searchTerm)
-            console.log(usersResult);
+            setUsers(usersResult)
+
+            if(Object.keys(usersResult).length === 0) {
+                setNoResultsFound(true);
+            }
+            else{
+                 setNoResultsFound(false)
+            }
 
             setIsLoading(false)
         },500)
@@ -59,6 +66,27 @@ const NewChatScreen = props => {
                 onChangeText={(text) => setSearchTerm(text)}
             />
         </View>
+
+        {
+            isLoading && 
+            <View style={commonStyles.center}>
+                <ActivityIndicator size={'large'} color={colors.primary} />
+            </View>
+        }
+
+        {
+            !isLoading && !noResultsFound && users &&
+            <FlatList 
+                data={Object.keys(users)}
+                renderItem={(itemData) => {
+                    const userId = itemData.item;
+                    return <Text>
+                       {userId}
+                    </Text>
+                }}
+            />
+        }
+
         {
             !isLoading && noResultsFound && (
                 <View style={commonStyles.center}> 
