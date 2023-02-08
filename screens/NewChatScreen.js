@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, TextInput, ActivityIndicator, FlatList } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../components/CustomHeaderButton';
+import DataItem from '../components/DataItem';
 import PageContainer from '../components/PageContainer';
 import colors from '../constants/colors';
 import commonStyles from '../constants/commonStyles';
@@ -80,9 +81,13 @@ const NewChatScreen = props => {
                 data={Object.keys(users)}
                 renderItem={(itemData) => {
                     const userId = itemData.item;
-                    return <Text>
-                       {userId}
-                    </Text>
+                    const userData = users[userId];
+                    return <DataItem 
+                    
+                        title= {`${userData.firstName} ${userData.lastName}`}
+                        subTitle={userData.about}
+                        image={userData.profilePicture}
+                    />
                 }}
             />
         }
