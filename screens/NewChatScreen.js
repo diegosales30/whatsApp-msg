@@ -2,6 +2,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, TextInput, ActivityIndicator, FlatList } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import { useSelector } from 'react-redux';
 import CustomHeaderButton from '../components/CustomHeaderButton';
 import DataItem from '../components/DataItem';
 import PageContainer from '../components/PageContainer';
@@ -12,10 +13,12 @@ import { searchUsers } from '../utils/actions/userActions';
 
 const NewChatScreen = props => {
 
-    const [isLoading, setIsLoading] = useState(false)
-    const [users, setUsers] = useState()
-    const [noResultsFound, setNoResultsFound] = useState(false)
-    const [searchTerm, setSearchTerm] = useState('')
+    const [isLoading, setIsLoading] = useState(false);
+    const [users, setUsers] = useState();
+    const [noResultsFound, setNoResultsFound] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const userData = useSelector(state => state.auth.userData)
 
     useEffect(() => {
         props.navigation.setOptions({
@@ -42,6 +45,7 @@ const NewChatScreen = props => {
             setIsLoading(true);
 
             const usersResult = await searchUsers(searchTerm)
+            delete usersResult[userData.userId];
             setUsers(usersResult)
 
             if(Object.keys(usersResult).length === 0) {
@@ -55,7 +59,13 @@ const NewChatScreen = props => {
         },500)
 
         return () => clearTimeout(delaySearch);
-    }, [searchTerm])
+    }, [searchTerm]);
+
+    const userPressed = userId => {
+        props.navigation.navigate("ChatList", {
+            selectedUserId: userId
+        })
+    }
     
     return <PageContainer>
         <View style={styles.searchContainer}>
@@ -83,10 +93,10 @@ const NewChatScreen = props => {
                     const userId = itemData.item;
                     const userData = users[userId];
                     return <DataItem 
-                    
                         title= {`${userData.firstName} ${userData.lastName}`}
                         subTitle={userData.about}
                         image={userData.profilePicture}
+                        onPress={() => userPressed(userId)}
                     />
                 }}
             />
