@@ -2,16 +2,19 @@ import { FontAwesome } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, TextInput, ActivityIndicator, FlatList } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CustomHeaderButton from '../components/CustomHeaderButton';
 import DataItem from '../components/DataItem';
 import PageContainer from '../components/PageContainer';
 import colors from '../constants/colors';
 import commonStyles from '../constants/commonStyles';
+import { setStoredUsers } from '../store/userSlice';
 import { searchUsers } from '../utils/actions/userActions';
 
 
 const NewChatScreen = props => {
+
+    const dispatch = useDispatch()
 
     const [isLoading, setIsLoading] = useState(false);
     const [users, setUsers] = useState();
@@ -53,6 +56,8 @@ const NewChatScreen = props => {
             }
             else{
                  setNoResultsFound(false)
+
+                dispatch(setStoredUsers({newUsers: usersResult}))
             }
 
             setIsLoading(false)
